@@ -1,0 +1,13 @@
+version: '3.9'
+
+services:
+  logging_bot:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    network_mode: host
+    container_name: logging_bot
+    volumes:
+      - ./logs/:/app/logs/ # logs file
+    env_file:
+      - .env

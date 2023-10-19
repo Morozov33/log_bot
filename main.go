@@ -17,19 +17,19 @@ func main() {
 	logger.SetOutput(os.Stdout)
 	file, err := os.OpenFile(logFile, os.O_WRONLY|os.O_CREATE|os.O_APPEND, 0755)
 	if err != nil {
-		logger.Fatal(err, "Failed opening or creating logs file")
+		logger.Fatal(err, " Failed opening or creating logs file")
 	}
 	defer file.Close()
 	logger.SetOutput(file)
 
 	conn, err := amqp.Dial("amqp://guest:guest@localhost:5672/")
 	if err != nil {
-		logger.Fatal(err, "Failed conection to RabbitMQ")
+		logger.Fatal(err, " Failed conection to RabbitMQ")
 	}
 	defer conn.Close()
 	ch, err := conn.Channel()
 	if err != nil {
-		logger.Fatal(err, "Failed to open a channel")
+		logger.Fatal(err, " Failed to open a channel")
 	}
 	defer ch.Close()
 	q, err := ch.QueueDeclare(
@@ -41,7 +41,7 @@ func main() {
 		nil,                     // arguments
 	)
 	if err != nil {
-		logger.Fatal(err, "Failed to declare a queue")
+		logger.Fatal(err, " Failed to declare a queue")
 	}
 	msgs, err := ch.Consume(
 		q.Name, // queue
@@ -53,19 +53,19 @@ func main() {
 		nil,    // args
 	)
 	if err != nil {
-		logger.Fatal(err, "Failed to register a consumer")
+		logger.Fatal(err, " Failed to register a consumer")
 	}
 
 	var forever chan struct{}
 
 	bot, err := tgbotapi.NewBotAPI(os.Getenv("TELEGRAM_API_TOKEN"))
 	if err != nil {
-		logger.Fatal(err, "Failed to connect a bot")
+		logger.Fatal(err, " Failed to connect a bot")
 	}
 
 	chatId, err := strconv.Atoi(os.Getenv("TELEGRAM_CHAT_ID"))
 	if err != nil {
-		logger.Fatal(err, "Failed to connect a chat")
+		logger.Fatal(err, " Failed to connect a chat")
 	}
 	go func() {
 		for d := range msgs {
@@ -73,7 +73,7 @@ func main() {
 			msg.Text = string(d.Body)
 			logger.Info(msg.Text)
 			if _, err := bot.Send(msg); err != nil {
-				logger.Error(err, "Failed to send a message")
+				logger.Error(err, " Failed to send a message")
 			}
 		}
 	}()
